@@ -17,7 +17,7 @@ import { UTILITIES } from '../constants/utilities';
 import { COLORS, SPACING, SIZES } from '../constants/theme';
 import { RootStackParamList, Utility } from '../types';
 
-const LOGO = require('../assets/logo.png');
+const LOGO = require('../assets/logo.jpg');
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
