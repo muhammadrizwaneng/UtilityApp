@@ -140,6 +140,23 @@ export default function ImageToPdfScreen({ navigation }: Props) {
 
             if (Platform.OS === 'android') {
                 const fileName = `document_${Date.now()}.pdf`;
+                const apiLevel = Number(Platform.Version);
+                if (!Number.isNaN(apiLevel) && apiLevel >= 29) {
+                    Alert.alert(
+                        'Save PDF',
+                        'Android storage restrictions prevent saving directly to Downloads. Use Share to save the PDF via the system dialog.',
+                        [
+                            { text: 'Cancel', style: 'cancel' },
+                            {
+                                text: 'Share',
+                                onPress: async () => {
+                                    await sharePdf(pdfPath);
+                                },
+                            },
+                        ],
+                    );
+                    return;
+                }
                 const hasLegacyPermission = await requestLegacyStorageWritePermission();
 
                 if (!hasLegacyPermission) {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import QRCode from 'react-native-qrcode-svg';
 import LinearGradient from 'react-native-linear-gradient';
+import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
 import RNFS from 'react-native-fs';
 import ImageResizer from 'react-native-image-resizer';
 import Share from 'react-native-share';
@@ -32,7 +33,17 @@ export default function QRGeneratorScreen({ navigation }: Props) {
     const [qrValue, setQrValue] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const qrRef = useRef<any>(null);
+    const bottomSheetRef = useRef<BottomSheetModal>(null);
+    const snapPoints = useMemo(() => ['30%'], []);
     const insets = useSafeAreaInsets();
+
+    const openSaveSheet = () => {
+        bottomSheetRef.current?.present();
+    };
+
+    const closeSaveSheet = () => {
+        bottomSheetRef.current?.dismiss();
+    };
 
     const requestLegacyStorageWritePermission = async () => {
         if (Platform.OS !== 'android') return true;
@@ -259,7 +270,7 @@ export default function QRGeneratorScreen({ navigation }: Props) {
                         {qrValue && (
                             <TouchableOpacity
                                 style={styles.saveButton}
-                                onPress={() => saveQrImage('png')}
+                                onPress={openSaveSheet}
                                 disabled={isSaving}
                             >
                                 <LinearGradient
@@ -268,25 +279,7 @@ export default function QRGeneratorScreen({ navigation }: Props) {
                                     end={{ x: 1, y: 0 }}
                                     style={styles.buttonGradient}>
                                     <Text style={styles.buttonText}>
-                                        {isSaving ? 'Saving...' : 'Save PNG'}
-                                    </Text>
-                                </LinearGradient>
-                            </TouchableOpacity>
-                        )}
-
-                        {qrValue && (
-                            <TouchableOpacity
-                                style={styles.saveButton}
-                                onPress={() => saveQrImage('jpg')}
-                                disabled={isSaving}
-                            >
-                                <LinearGradient
-                                    colors={['#3B82F6', '#60A5FA']}
-                                    start={{ x: 0, y: 0 }}
-                                    end={{ x: 1, y: 0 }}
-                                    style={styles.buttonGradient}>
-                                    <Text style={styles.buttonText}>
-                                        {isSaving ? 'Saving...' : 'Save JPG'}
+                                        {isSaving ? 'Saving...' : 'Save'}
                                     </Text>
                                 </LinearGradient>
                             </TouchableOpacity>
@@ -298,6 +291,46 @@ export default function QRGeneratorScreen({ navigation }: Props) {
                             </TouchableOpacity>
                         )}
                     </View>
+
+                    <BottomSheetModal
+                        ref={bottomSheetRef}
+                        index={0}
+                        snapPoints={snapPoints}
+                        enablePanDownToClose
+                        backdropComponent={(props: any) => (
+                            <BottomSheetBackdrop
+                                {...props}
+                                appearsOnIndex={0}
+                                disappearsOnIndex={-1}
+                            />
+                        )}
+                    >
+                        <View style={styles.sheetContent}>
+                            <Text style={styles.sheetTitle}>Save QR Code</Text>
+
+                            <TouchableOpacity
+                                style={styles.sheetOption}
+                                disabled={isSaving}
+                                onPress={async () => {
+                                    closeSaveSheet();
+                                    await saveQrImage('png');
+                                }}
+                            >
+                                <Text style={styles.sheetOptionText}>Save as PNG</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={styles.sheetOption}
+                                disabled={isSaving}
+                                onPress={async () => {
+                                    closeSaveSheet();
+                                    await saveQrImage('jpg');
+                                }}
+                            >
+                                <Text style={styles.sheetOptionText}>Save as JPG</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </BottomSheetModal>
                 </View>
             </LinearGradient>
         </View>
@@ -430,6 +463,33 @@ const styles = StyleSheet.create({
         borderRadius: SIZES.radiusMd,
         overflow: 'hidden',
         ...SHADOWS.medium,
+    },
+    sheetContent: {
+        flex: 1,
+        paddingHorizontal: SPACING.lg,
+        paddingTop: SPACING.md,
+        paddingBottom: SPACING.xl,
+    },
+    sheetTitle: {
+        fontSize: SIZES.fontXl,
+        fontWeight: '700',
+        color: COLORS.text,
+        marginBottom: SPACING.md,
+    },
+    sheetOption: {
+        backgroundColor: COLORS.backgroundCard,
+        borderRadius: SIZES.radiusMd,
+        paddingVertical: SPACING.md,
+        paddingHorizontal: SPACING.lg,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        marginTop: SPACING.md,
+    },
+    sheetOptionText: {
+        fontSize: SIZES.fontLg,
+        fontWeight: '600',
+        color: COLORS.text,
+        textAlign: 'center',
     },
     buttonGradient: {
         paddingVertical: SPACING.md,

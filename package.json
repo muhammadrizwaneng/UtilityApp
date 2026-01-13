@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^5.1.8",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native/new-app-screen": "0.83.1",
     "@react-navigation/native": "^7.1.26",
@@ -17,22 +18,25 @@
     "react": "19.2.0",
     "react-native": "0.83.1",
     "react-native-fs": "^2.20.0",
+    "react-native-gesture-handler": "^2.21.2",
     "react-native-image-picker": "^8.2.1",
     "react-native-image-resizer": "^1.4.5",
     "react-native-images-to-pdf": "^0.2.1",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-qrcode-svg": "^6.3.21",
+    "react-native-reanimated": "^4.2.1",
     "react-native-safe-area-context": "^5.6.2",
     "react-native-screens": "^4.19.0",
     "react-native-share": "^12.2.2",
     "react-native-svg": "^15.15.1",
-    "react-native-vision-camera": "^4.7.3"
+    "react-native-vision-camera": "^4.7.3",
+    "react-native-worklets": "^0.7.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
-    "@react-native-community/cli": "20.0.0",
+    "@react-native-community/cli": "latest",
     "@react-native-community/cli-platform-android": "20.0.0",
     "@react-native-community/cli-platform-ios": "20.0.0",
     "@react-native/babel-preset": "0.83.1",
@@ -50,5 +54,6 @@
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "packageManager": "yarn@3.6.4+sha512.e70835d4d6d62c07be76b3c1529cb640c7443f0fe434ef4b6478a5a399218cbaf1511b396b3c56eb03bc86424cff2320f6167ad2fde273aa0df6e60b7754029f"
 }
