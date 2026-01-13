@@ -1,4 +1,4 @@
-package com.utilityapp
+package com.utilityhub.app
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

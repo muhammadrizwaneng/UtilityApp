@@ -1,4 +1,4 @@
-package com.utilityapp
+package com.utilityhub.app
 
 import android.app.Application
 import com.facebook.react.PackageList
