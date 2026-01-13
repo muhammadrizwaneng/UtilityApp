@@ -7,6 +7,7 @@ import {
     TextInput,
     StatusBar,
     Platform,
+    Image,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,6 +16,8 @@ import UtilityCard from '../components/UtilityCard';
 import { UTILITIES } from '../constants/utilities';
 import { COLORS, SPACING, SIZES } from '../constants/theme';
 import { RootStackParamList, Utility } from '../types';
+
+const LOGO = require('../assets/logo.png');
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -49,7 +52,7 @@ export default function HomeScreen({ navigation }: Props) {
                             <Text style={styles.title}>Utility Hub</Text>
                             <Text style={styles.subtitle}>All your tools in one place</Text>
                         </View>
-                        <View style={styles.avatarPlaceholder} />
+                        <Image source={LOGO} style={styles.logo} />
                     </View>
 
                     {/* Search Bar */}
@@ -129,13 +132,11 @@ const styles = StyleSheet.create({
         color: COLORS.textMuted,
         marginTop: 2,
     },
-    avatarPlaceholder: {
+    logo: {
         width: 44,
         height: 44,
-        borderRadius: 22,
-        backgroundColor: COLORS.backgroundLight,
-        borderWidth: 1,
-        borderColor: COLORS.border,
+        borderRadius: 12,
+        backgroundColor: 'transparent',
     },
     searchContainer: {
         paddingHorizontal: SPACING.lg,
