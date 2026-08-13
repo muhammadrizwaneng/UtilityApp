@@ -20,5 +20,8 @@ export type RootStackParamList = {
     PasswordGenerator: undefined;
     Calculator: undefined;
     Notes: undefined;
-    FileManager: undefined;
+    TipCalculator: undefined;
+    Stopwatch: undefined;
+    AgeCalculator: undefined;
+    Base64Tools: undefined;
 };
