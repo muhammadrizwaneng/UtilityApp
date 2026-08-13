@@ -10,9 +10,9 @@ import {
     StatusBar,
     Clipboard,
 } from 'react-native';
+import 'react-native-get-random-values';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-// import Clipboard from '@react-native-clipboard/clipboard';
 import { COLORS, SPACING, SIZES, SHADOWS } from '../constants/theme';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
@@ -23,6 +23,20 @@ interface Props {
     navigation: NavigationProp;
 }
 
+const AMBIGUOUS_CHARS = 'lI1O0';
+
+/** Uniform random index in [0, max) via rejection sampling — avoids modulo bias. */
+function secureRandomIndex(max: number): number {
+    const byteBuffer = new Uint8Array(1);
+    const limit = Math.floor(256 / max) * max;
+    let value: number;
+    do {
+        crypto.getRandomValues(byteBuffer);
+        value = byteBuffer[0];
+    } while (value >= limit);
+    return value % max;
+}
+
 export default function PasswordGeneratorScreen({ navigation }: Props) {
     const [password, setPassword] = useState('');
     const [length, setLength] = useState(16);
@@ -30,6 +44,8 @@ export default function PasswordGeneratorScreen({ navigation }: Props) {
     const [includeLowercase, setIncludeLowercase] = useState(true);
     const [includeNumbers, setIncludeNumbers] = useState(true);
     const [includeSymbols, setIncludeSymbols] = useState(true);
+    const [excludeAmbiguous, setExcludeAmbiguous] = useState(false);
+    const [avoidRepeating, setAvoidRepeating] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState<'weak' | 'medium' | 'strong' | 'very-strong'>('medium');
     const insets = useSafeAreaInsets();
 
@@ -40,14 +56,31 @@ export default function PasswordGeneratorScreen({ navigation }: Props) {
         if (includeNumbers) charset += '0123456789';
         if (includeSymbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
 
+        if (excludeAmbiguous) {
+            charset = charset
+                .split('')
+                .filter(c => !AMBIGUOUS_CHARS.includes(c))
+                .join('');
+        }
+
         if (charset === '') {
             Alert.alert('Error', 'Please select at least one character type');
             return;
         }
 
         let newPassword = '';
+        let prevChar = '';
         for (let i = 0; i < length; i++) {
-            newPassword += charset.charAt(Math.floor(Math.random() * charset.length));
+            let nextChar = charset.charAt(secureRandomIndex(charset.length));
+            if (avoidRepeating && charset.length > 1) {
+                let attempts = 0;
+                while (nextChar === prevChar && attempts < 10) {
+                    nextChar = charset.charAt(secureRandomIndex(charset.length));
+                    attempts++;
+                }
+            }
+            newPassword += nextChar;
+            prevChar = nextChar;
         }
 
         setPassword(newPassword);
@@ -203,6 +236,26 @@ export default function PasswordGeneratorScreen({ navigation }: Props) {
                                 <Switch
                                     value={includeSymbols}
                                     onValueChange={setIncludeSymbols}
+                                    trackColor={{ false: COLORS.border, true: COLORS.primary }}
+                                    thumbColor={COLORS.white}
+                                />
+                            </View>
+
+                            <View style={styles.optionRow}>
+                                <Text style={styles.optionLabel}>Exclude ambiguous (l, I, 1, O, 0)</Text>
+                                <Switch
+                                    value={excludeAmbiguous}
+                                    onValueChange={setExcludeAmbiguous}
+                                    trackColor={{ false: COLORS.border, true: COLORS.primary }}
+                                    thumbColor={COLORS.white}
+                                />
+                            </View>
+
+                            <View style={styles.optionRow}>
+                                <Text style={styles.optionLabel}>Avoid consecutive repeats</Text>
+                                <Switch
+                                    value={avoidRepeating}
+                                    onValueChange={setAvoidRepeating}
                                     trackColor={{ false: COLORS.border, true: COLORS.primary }}
                                     thumbColor={COLORS.white}
                                 />

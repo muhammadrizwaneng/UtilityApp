@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { COLORS, SPACING, SIZES, SHADOWS } from '../constants/theme';
+import { NOTES_KEY } from '../constants/notesStorage';
 import { RootStackParamList } from '../types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -30,12 +31,19 @@ interface Note {
     title: string;
     body: string;
     updatedAt: number;
+    pinned?: boolean;
 }
 
-const NOTES_KEY = '@utilityhub_notes';
+function sortNotes(list: Note[]): Note[] {
+    return [...list].sort((a, b) => {
+        if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
+        return b.updatedAt - a.updatedAt;
+    });
+}
 
 export default function NotesScreen({ navigation }: Props) {
     const [notes, setNotes] = useState<Note[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [editing, setEditing] = useState<Note | null>(null);
     const [title, setTitle] = useState('');
@@ -47,7 +55,7 @@ export default function NotesScreen({ navigation }: Props) {
         if (!raw) return;
         try {
             const parsed: Note[] = JSON.parse(raw);
-            setNotes(parsed.sort((a, b) => b.updatedAt - a.updatedAt));
+            setNotes(sortNotes(parsed));
         } catch {
             /* ignore */
         }
@@ -58,9 +66,19 @@ export default function NotesScreen({ navigation }: Props) {
     }, [loadNotes]);
 
     const persist = async (next: Note[]) => {
-        setNotes(next.sort((a, b) => b.updatedAt - a.updatedAt));
+        setNotes(sortNotes(next));
         await AsyncStorage.setItem(NOTES_KEY, JSON.stringify(next));
     };
+
+    const togglePin = (note: Note) => {
+        persist(notes.map(n => (n.id === note.id ? { ...n, pinned: !n.pinned } : n)));
+    };
+
+    const filteredNotes = notes.filter(
+        n =>
+            n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            n.body.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
 
     const openNew = () => {
         setEditing(null);
@@ -158,8 +176,18 @@ export default function NotesScreen({ navigation }: Props) {
                         </TouchableOpacity>
                     </View>
 
+                    <View style={styles.searchContainer}>
+                        <TextInput
+                            style={styles.searchInput}
+                            placeholder="Search notes..."
+                            placeholderTextColor={COLORS.textMuted}
+                            value={searchQuery}
+                            onChangeText={setSearchQuery}
+                        />
+                    </View>
+
                     <FlatList
-                        data={notes}
+                        data={filteredNotes}
                         keyExtractor={item => item.id}
                         contentContainerStyle={{
                             padding: SPACING.lg,
@@ -169,9 +197,13 @@ export default function NotesScreen({ navigation }: Props) {
                         ListEmptyComponent={
                             <View style={styles.empty}>
                                 <Text style={styles.emptyIcon}>📝</Text>
-                                <Text style={styles.emptyText}>No notes yet</Text>
+                                <Text style={styles.emptyText}>
+                                    {searchQuery ? 'No matching notes' : 'No notes yet'}
+                                </Text>
                                 <Text style={styles.emptyHint}>
-                                    Tap + to create a note stored on this device
+                                    {searchQuery
+                                        ? 'Try a different search term'
+                                        : 'Tap + to create a note stored on this device'}
                                 </Text>
                             </View>
                         }
@@ -180,9 +212,18 @@ export default function NotesScreen({ navigation }: Props) {
                                 style={styles.noteCard}
                                 onPress={() => openEdit(item)}
                                 onLongPress={() => deleteNote(item)}>
-                                <Text style={styles.noteTitle} numberOfLines={1}>
-                                    {item.title}
-                                </Text>
+                                <View style={styles.noteCardHeader}>
+                                    <Text style={styles.noteTitle} numberOfLines={1}>
+                                        {item.title}
+                                    </Text>
+                                    <TouchableOpacity
+                                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                        onPress={() => togglePin(item)}>
+                                        <Text style={styles.pinIcon}>
+                                            {item.pinned ? '📌' : '📍'}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
                                 {!!item.body && (
                                     <Text style={styles.noteBody} numberOfLines={2}>
                                         {item.body}
@@ -318,7 +359,31 @@ const styles = StyleSheet.create({
         borderColor: COLORS.border,
         ...SHADOWS.medium,
     },
+    searchContainer: {
+        paddingHorizontal: SPACING.lg,
+        paddingBottom: SPACING.sm,
+    },
+    searchInput: {
+        backgroundColor: COLORS.backgroundCard,
+        borderRadius: SIZES.radiusMd,
+        paddingHorizontal: SPACING.md,
+        paddingVertical: 12,
+        fontSize: SIZES.fontMd,
+        color: COLORS.text,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+    },
+    noteCardHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    pinIcon: {
+        fontSize: 18,
+        marginLeft: SPACING.sm,
+    },
     noteTitle: {
+        flex: 1,
         fontSize: SIZES.fontLg,
         fontWeight: '700',
         color: COLORS.text,

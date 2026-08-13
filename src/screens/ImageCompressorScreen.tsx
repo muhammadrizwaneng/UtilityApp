@@ -103,9 +103,11 @@ export default function ImageCompressorScreen({ navigation }: Props) {
     };
 
     const pickImage = () => {
+        // Uses Android Photo Picker / iOS picker — no READ_MEDIA_* permission required.
         launchImageLibrary(
             {
                 mediaType: 'photo',
+                selectionLimit: 1,
                 quality: 1,
             },
             (response: ImagePickerResponse) => {

@@ -17,6 +17,7 @@ import TipCalculatorScreen from '../screens/TipCalculatorScreen';
 import StopwatchScreen from '../screens/StopwatchScreen';
 import AgeCalculatorScreen from '../screens/AgeCalculatorScreen';
 import Base64ToolsScreen from '../screens/Base64ToolsScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 import { RootStackParamList } from '../types';
 
@@ -46,6 +47,7 @@ export default function AppNavigator() {
                 <Stack.Screen name="Stopwatch" component={StopwatchScreen} />
                 <Stack.Screen name="AgeCalculator" component={AgeCalculatorScreen} />
                 <Stack.Screen name="Base64Tools" component={Base64ToolsScreen} />
+                <Stack.Screen name="Settings" component={SettingsScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

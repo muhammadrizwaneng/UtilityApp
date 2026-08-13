@@ -80,10 +80,11 @@ export default function ImageToPdfScreen({ navigation }: Props) {
     };
 
     const pickImages = () => {
+        // Uses Android Photo Picker / iOS picker — no READ_MEDIA_* permission required.
         launchImageLibrary(
             {
                 mediaType: 'photo',
-                selectionLimit: 0, // 0 means unlimited
+                selectionLimit: 0, // 0 = multi-select via system picker
                 quality: 1,
                 includeBase64: true,
             },

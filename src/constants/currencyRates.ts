@@ -135,6 +135,10 @@ export async function fetchLatestRates(): Promise<RatesPayload> {
     return { rates, updatedAt, source: 'live' };
 }
 
+export async function clearRatesCache(): Promise<void> {
+    await AsyncStorage.removeItem(CACHE_KEY);
+}
+
 export async function getRates(preferFresh = true): Promise<RatesPayload> {
     const cached = await loadCachedRates();
 

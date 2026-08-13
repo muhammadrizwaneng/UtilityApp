@@ -8,6 +8,7 @@ import {
     StatusBar,
     Platform,
     Image,
+    TouchableOpacity,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -52,7 +53,15 @@ export default function HomeScreen({ navigation }: Props) {
                             <Text style={styles.title}>Utility Hub</Text>
                             <Text style={styles.subtitle}>All your tools in one place</Text>
                         </View>
-                        <Image source={LOGO} style={styles.logo} />
+                        <View style={styles.headerRight}>
+                            <TouchableOpacity
+                                style={styles.settingsButton}
+                                onPress={() => navigation.navigate('Settings')}
+                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                                <Text style={styles.settingsIcon}>⚙️</Text>
+                            </TouchableOpacity>
+                            <Image source={LOGO} style={styles.logo} />
+                        </View>
                     </View>
 
                     {/* Search Bar */}
@@ -131,6 +140,24 @@ const styles = StyleSheet.create({
         fontSize: SIZES.fontMd,
         color: COLORS.textMuted,
         marginTop: 2,
+    },
+    headerRight: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: SPACING.sm,
+    },
+    settingsButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: COLORS.backgroundCard,
+        borderWidth: 1,
+        borderColor: COLORS.border,
+    },
+    settingsIcon: {
+        fontSize: 18,
     },
     logo: {
         width: 44,

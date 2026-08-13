@@ -24,4 +24,5 @@ export type RootStackParamList = {
     Stopwatch: undefined;
     AgeCalculator: undefined;
     Base64Tools: undefined;
+    Settings: undefined;
 };
