@@ -14,6 +14,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { COLORS, SPACING, SIZES, SHADOWS } from '../constants/theme';
 import { clearAllNotes } from '../constants/notesStorage';
+import { clearAllExpenses } from '../constants/expenseStorage';
+import { clearAllChecklist } from '../constants/checklistStorage';
+import { clearAllCountdowns } from '../constants/countdownStorage';
 import { clearRatesCache } from '../constants/currencyRates';
 import { RootStackParamList } from '../types';
 import packageJson from '../../package.json';
@@ -39,6 +42,60 @@ export default function SettingsScreen({ navigation }: Props) {
                     onPress: async () => {
                         await clearAllNotes();
                         Alert.alert('Done', 'All notes have been cleared.');
+                    },
+                },
+            ],
+        );
+    };
+
+    const confirmClearExpenses = () => {
+        Alert.alert(
+            'Clear all expenses?',
+            'This permanently deletes every expense stored on this device. This cannot be undone.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Clear Expenses',
+                    style: 'destructive',
+                    onPress: async () => {
+                        await clearAllExpenses();
+                        Alert.alert('Done', 'All expenses have been cleared.');
+                    },
+                },
+            ],
+        );
+    };
+
+    const confirmClearChecklist = () => {
+        Alert.alert(
+            'Clear checklist?',
+            'This permanently deletes every checklist item stored on this device.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Clear Checklist',
+                    style: 'destructive',
+                    onPress: async () => {
+                        await clearAllChecklist();
+                        Alert.alert('Done', 'Checklist has been cleared.');
+                    },
+                },
+            ],
+        );
+    };
+
+    const confirmClearCountdowns = () => {
+        Alert.alert(
+            'Clear countdowns?',
+            'This permanently deletes every countdown stored on this device.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Clear Countdowns',
+                    style: 'destructive',
+                    onPress: async () => {
+                        await clearAllCountdowns();
+                        Alert.alert('Done', 'Countdowns have been cleared.');
                     },
                 },
             ],
@@ -103,6 +160,36 @@ export default function SettingsScreen({ navigation }: Props) {
                                     </Text>
                                 </View>
                                 <Text style={styles.rowIcon}>🗑️</Text>
+                            </TouchableOpacity>
+                            <View style={styles.divider} />
+                            <TouchableOpacity style={styles.row} onPress={confirmClearExpenses}>
+                                <View style={styles.rowText}>
+                                    <Text style={styles.rowTitle}>Clear all expenses</Text>
+                                    <Text style={styles.rowHint}>
+                                        Delete every expense saved on this device
+                                    </Text>
+                                </View>
+                                <Text style={styles.rowIcon}>💸</Text>
+                            </TouchableOpacity>
+                            <View style={styles.divider} />
+                            <TouchableOpacity style={styles.row} onPress={confirmClearChecklist}>
+                                <View style={styles.rowText}>
+                                    <Text style={styles.rowTitle}>Clear checklist</Text>
+                                    <Text style={styles.rowHint}>
+                                        Delete every task saved on this device
+                                    </Text>
+                                </View>
+                                <Text style={styles.rowIcon}>✅</Text>
+                            </TouchableOpacity>
+                            <View style={styles.divider} />
+                            <TouchableOpacity style={styles.row} onPress={confirmClearCountdowns}>
+                                <View style={styles.rowText}>
+                                    <Text style={styles.rowTitle}>Clear countdowns</Text>
+                                    <Text style={styles.rowHint}>
+                                        Delete every saved event countdown
+                                    </Text>
+                                </View>
+                                <Text style={styles.rowIcon}>⏳</Text>
                             </TouchableOpacity>
                             <View style={styles.divider} />
                             <TouchableOpacity style={styles.row} onPress={confirmClearRatesCache}>

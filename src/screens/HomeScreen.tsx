@@ -37,7 +37,7 @@ export default function HomeScreen({ navigation }: Props) {
     );
 
     const handleUtilityPress = (utility: Utility) => {
-        navigation.navigate(utility.screen as keyof RootStackParamList);
+        navigation.navigate(utility.screen as never);
     };
 
     return (
@@ -51,7 +51,7 @@ export default function HomeScreen({ navigation }: Props) {
                     <View style={styles.header}>
                         <View>
                             <Text style={styles.title}>Utility Hub</Text>
-                            <Text style={styles.subtitle}>All your tools in one place</Text>
+                            <Text style={styles.subtitle}>Everyday tools, always on your phone</Text>
                         </View>
                         <View style={styles.headerRight}>
                             <TouchableOpacity
